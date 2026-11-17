@@ -1,0 +1,90 @@
+﻿@model KTBE1.Models.MyOrderViewModel
+@using KTBE1.Models
+@{
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+    ViewBag.Title = "Đơn hàng của tôi";
+}
+
+<h3 class="mt-3 mb-3">Đơn hàng của tôi</h3>
+
+@if (TempData["Msg"] != null)
+{
+    <div class="alert alert-success">@TempData["Msg"]</div>
+}
+
+<form method="get" action="@Url.Action("MyOrder", "Customer")" class="input-group mb-3">
+    <input type="hidden" name="tab" value="@Model.Tab" />
+    <input type="text" name="keyword" class="form-control" placeholder="Tìm theo Mã đơn hàng hoặc Tên sản phẩm" value="@Model.Keyword" />
+    <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+</form>
+
+<ul class="nav nav-tabs mb-3">
+    <li class="nav-item">
+        <a class="@("nav-link" + (Model.Tab == "" ? " active" : ""))" href="@Url.Action("MyOrder", "Customer", new { keyword = Model.Keyword })">Tất cả đơn</a>
+    </li>
+    @foreach (var s in OrderStatus.All)
+    {
+        <li class="nav-item">
+            <a class="@("nav-link" + (Model.Tab == s ? " active" : ""))" href="@Url.Action("MyOrder", "Customer", new { tab = s, keyword = Model.Keyword })">@s</a>
+        </li>
+    }
+</ul>
+
+@if (!Model.Groups.Any())
+{
+    <div class="text-center py-5">
+        <h5 class="mb-3">BẠN CHƯA CÓ ĐƠN HÀNG NÀO. HÃY ĐẶT ĐƠN NGAY.</h5>
+        <a class="btn btn-primary" href="@Url.Action("Index", "Home")">Về trang HOME</a>
+    </div>
+}
+else
+{
+    foreach (var g in Model.Groups)
+    {
+        <h5 class="mt-4">
+            <span class="@("badge bg-" + OrderStatus.BadgeClass(g.Status))">@g.Status</span>
+            <small class="text-muted">(@g.Total đơn)</small>
+        </h5>
+
+        foreach (var o in g.Orders)
+        {
+            <div class="card mb-3">
+                <div class="card-header d-flex justify-content-between">
+                    <span>Mã đơn: <strong>#@o.OrderID</strong> &middot; @o.OrderDate.ToString("dd/MM/yyyy HH:mm")</span>
+                    <span>@o.PaymentStatus</span>
+                </div>
+                <ul class="list-group list-group-flush">
+                    @foreach (var d in o.OrderDetail)
+                    {
+                        <li class="list-group-item d-flex align-items-center">
+                            <img src="@Url.Content("~/Content/images/" + d.Product.ProductImage)" alt="" style="width:60px;height:80px;object-fit:cover;" onerror="this.style.visibility='hidden'" />
+                            <div class="flex-grow-1 ms-3">
+                                <div class="fw-semibold">@d.Product.ProductName</div>
+                                <div class="text-muted small">Số lượng: @d.Quantity &middot; Đơn giá: @d.UnitPrice.ToString("N0") đ</div>
+                            </div>
+                            <div class="text-nowrap">
+                                @using (Html.BeginForm("Add", "Cart", FormMethod.Post, new { @class = "d-inline" }))
+                                {
+                                    <input type="hidden" name="productId" value="@d.ProductID" />
+                                    <input type="hidden" name="returnUrl" value="@Request.RawUrl" />
+                                    <button type="submit" class="btn btn-sm btn-primary">MUA LẠI</button>
+                                }
+                                <a class="btn btn-sm btn-outline-secondary" href="@Url.Action("Details", "Product", new { id = d.ProductID })">XEM CHI TIẾT</a>
+                            </div>
+                        </li>
+                    }
+                </ul>
+                <div class="card-footer text-end">
+                    Tổng tiền: <strong class="text-danger">@o.TotalAmount.ToString("N0") đ</strong>
+                </div>
+            </div>
+        }
+
+        if (g.HasMore)
+        {
+            <div class="mb-3">
+                <a href="@Url.Action("MyOrder", "Customer", new { tab = g.Status, more = true, keyword = Model.Keyword })">Xem thêm</a>
+            </div>
+        }
+    }
+}

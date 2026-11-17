@@ -1,0 +1,59 @@
+﻿@{
+    ViewBag.Title = "Đăng ký";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <h3 class="mb-3">Tạo tài khoản</h3>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger">@ViewBag.Error</div>
+        }
+
+        @using (Html.BeginForm("Register", "Account", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="mb-3">
+                <label class="form-label">Tên đăng nhập</label>
+                <input type="text" name="username" class="form-control"
+                       required maxlength="50" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Mật khẩu</label>
+                <input type="password" name="password" class="form-control"
+                       required minlength="6" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Họ tên</label>
+                <input type="text" name="customerName" class="form-control"
+                       required maxlength="100" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Số điện thoại</label>
+                <input type="text" name="customerPhone" class="form-control"
+                       required maxlength="15" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" name="customerEmail" class="form-control"
+                       maxlength="100" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Địa chỉ</label>
+                <input type="text" name="customerAddress" class="form-control"
+                       maxlength="200" />
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">
+                Đăng ký
+            </button>
+        }
+    </div>
+</div>

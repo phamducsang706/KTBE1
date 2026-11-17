@@ -1,0 +1,23 @@
+﻿@model KTBE1.Models.Product
+@{
+    ViewBag.Title = Model.ProductName;
+}
+
+<div class="row mt-4">
+    <div class="col-md-4">
+        <img src="@Url.Content("~/Content/images/" + Model.ProductImage)" alt="" class="img-fluid" onerror="this.style.visibility='hidden'" />
+    </div>
+    <div class="col-md-8">
+        <h3>@Model.ProductName</h3>
+        <p class="text-muted">Danh mục: @Model.Category.CategoryName</p>
+        <h4 class="text-danger">@Model.ProductPrice.ToString("N0") đ</h4>
+        <p>@Model.ProductDecription</p>
+        @using (Html.BeginForm("Add", "Cart", FormMethod.Post))
+        {
+            <input type="hidden" name="productId" value="@Model.ProductID" />
+            <input type="hidden" name="returnUrl" value="@Request.RawUrl" />
+            <button type="submit" class="btn btn-primary">Thêm vào giỏ hàng</button>
+        }
+        <a class="btn btn-link" href="@Url.Action("MyOrder", "Customer")">Quay lại đơn hàng của tôi</a>
+    </div>
+</div>

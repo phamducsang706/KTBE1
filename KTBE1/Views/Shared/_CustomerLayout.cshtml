@@ -1,0 +1,63 @@
+﻿@{
+    var cart = Session["Cart"] as Dictionary<int, int>;
+    int cartCount = 0;
+    if (cart != null)
+    {
+        foreach (int qty in cart.Values)
+        {
+            cartCount += qty;
+        }
+    }
+    string user = Session["Username"] as string;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Cửa hàng sách</title>
+    @Styles.Render("~/Content/css")
+</head>
+<body>
+    <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+        <div class="container">
+            @Html.ActionLink("CLOTHING STORE", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">@Html.ActionLink("Trang chủ", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Tài khoản</a>
+                        <ul class="dropdown-menu">
+                            <li>@Html.ActionLink("Lịch sử mua hàng", "MyOrder", "Customer", new { area = "" }, new { @class = "dropdown-item" })</li>
+                            @if (user != null)
+                            {
+                                <li>@Html.ActionLink("Đăng xuất (" + user + ")", "Logout", "Account", new { area = "" }, new { @class = "dropdown-item" })</li>
+                            }
+                            else
+                            {
+                                <li>@Html.ActionLink("Đăng nhập", "Login", "Account", new { area = "" }, new { @class = "dropdown-item" })</li>
+                            }
+                        </ul>
+                    </li>
+                </ul>
+                <span class="navbar-text">Giỏ hàng: @cartCount</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - Cửa hàng sách (Customer Layout)</p>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    <script src="@Url.Content("~/Scripts/bootstrap.bundle.min.js")"></script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>
